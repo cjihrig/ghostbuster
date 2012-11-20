@@ -36,6 +36,9 @@ controlpage.onAlert = function(message) {
 		case "onLoadFinished":
 			onLoadFinished(msg);
 			break;
+		case "onResourceRequested":
+			onResourceRequested(msg);
+			break;
 		case "render":
 			render(msg);
 			break;
@@ -110,6 +113,16 @@ function onLoadFinished(req) {
 
 	page.onLoadFinished = function(status) {
 		respond([req[0], "onLoadFinished", status]);
+	};
+}
+
+function onResourceRequested(req) {
+	var index = req[2];
+	var cbId = req[3];
+	var page = pages[index];
+
+	page.onResourceRequested = function(request) {
+		respond([req[0], "onResourceRequested", request]);
 	};
 }
 
