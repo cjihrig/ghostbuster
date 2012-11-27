@@ -24,6 +24,9 @@ controlpage.onAlert = function(message) {
 		case "createWebPage":
 			createWebPage(msg);
 			break;
+		case "onPhantomError":
+			onPhantomError(msg);
+			break;
 		case "openWebPage":
 			openWebPage(msg);
 			break;
@@ -38,6 +41,9 @@ controlpage.onAlert = function(message) {
 			break;
 		case "onResourceRequested":
 			onResourceRequested(msg);
+			break;
+		case "onPageError":
+			onPageError(msg);
 			break;
 		case "render":
 			render(msg);
@@ -88,6 +94,12 @@ function createWebPage(req) {
 	respond([req[0], "createWebPage", index]);
 }
 
+function onPhantomError(req) {
+	phantom.onError = function(msg, trace) {
+		respond([req[0], "onPhantomError", msg, trace]);
+	};
+}
+
 function openWebPage(req) {
 	var index = req[2];
 	var url = req[3];
@@ -123,6 +135,16 @@ function onResourceRequested(req) {
 
 	page.onResourceRequested = function(request) {
 		respond([req[0], "onResourceRequested", request]);
+	};
+}
+
+function onPageError(req) {
+	var index = req[2];
+	var cbId = req[3];
+	var page = pages[index];
+
+	page.onError = function(msg, trace) {
+		respond([req[0], "onPageError", msg, trace]);
 	};
 }
 

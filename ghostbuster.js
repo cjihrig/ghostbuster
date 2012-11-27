@@ -81,6 +81,8 @@ module.exports = {
 					return cb(res);
 				case "createWebPage":
 					return cb(new WebPage(res));
+				case "onPhantomError":
+					return cb(res, msg[3]);
 				case "openWebPage":
 					return cb(res);
 				case "evaluate":
@@ -91,6 +93,8 @@ module.exports = {
 					return cb(res);
 				case "onResourceRequested":
 					return cb(res);
+				case "onPageError":
+					return cb(res, msg[3]);
 				case "render":
 					return cb();
 				case "closeWebPage":
@@ -108,6 +112,10 @@ module.exports = {
 
 		p.createWebPage = function(properties, callback) {
 			request(["createWebPage", properties], callback);
+		};
+
+		p.onError = function(callback) {
+			request(["onPhantomError"], callback);
 		};
 
 		p.exit = function() {
@@ -139,6 +147,12 @@ module.exports = {
 				var cbId = requestCnt++;
 
 				request(["onResourceRequested", index, cbId], callback, cbId);
+			};
+
+			this.onError = function(callback) {
+				var cbId = requestCnt++;
+
+				request(["onPageError", index, cbId], callback, cbId);
 			};
 
 			this.render = function(fileName, callback) {
