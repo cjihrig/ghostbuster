@@ -85,6 +85,8 @@ module.exports = {
 					return cb(res);
 				case "onLoadFinished":
 					return cb(res);
+				case "onResourceRequested":
+					return cb(res);
 				case "render":
 					return cb();
 				case "closeWebPage":
@@ -127,6 +129,12 @@ module.exports = {
 				var cbId = requestCnt++;
 
 				request(["onLoadFinished", index, cbId], callback, cbId);
+			};
+
+			this.onResourceRequested = function(callback) {
+				var cbId = requestCnt++;
+
+				request(["onResourceRequested", index, cbId], callback, cbId);
 			};
 
 			this.render = function(fileName, callback) {
