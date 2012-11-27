@@ -4,7 +4,7 @@ var spawn = require("child_process").spawn;
 var bridge = __dirname + "/bridge.js";
 
 module.exports = {
-	spawn: function(bridgePort, callback) {
+	spawn: function(bridgePort, callback, exitCallback) {
 		var server = null;
 		var phantom = null;
 		var io = null;
@@ -47,6 +47,10 @@ module.exports = {
 		phantom.on("exit", function(code) {
 			p.status = "closed";
 			p.exitCode = code;
+
+			if (exitCallback) {
+				exitCallback(code);
+			}
 		});
 
 		function request(args, callback, cbId) {
