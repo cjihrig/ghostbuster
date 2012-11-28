@@ -29,7 +29,11 @@ module.exports = {
 			p.status = "open";
 			socket = sock;
 			socket.on("disconnect", function(response) {
-				server.close();
+				try { // Sometimes the server isn't still open
+					server.close();
+				} catch (e) {
+					// ...but we don't really care
+				}
 			});
 			socket.on("res", responseHandler);
 			callback(p);
