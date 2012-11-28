@@ -4,7 +4,7 @@ var spawn = require("child_process").spawn;
 var bridge = __dirname + "/bridge.js";
 
 module.exports = {
-	spawn: function(bridgePort, callback) {
+	spawn: function(bridgePort, callback, exitCallback) {
 		var server = null;
 		var phantom = null;
 		var io = null;
@@ -47,6 +47,10 @@ module.exports = {
 		phantom.on("exit", function(code) {
 			p.status = "closed";
 			p.exitCode = code;
+
+			if (exitCallback) {
+				exitCallback(code);
+			}
 		});
 
 		function request(args, callback, cbId) {
@@ -77,6 +81,8 @@ module.exports = {
 					return cb(res);
 				case "createWebPage":
 					return cb(new WebPage(res));
+				case "onPhantomError":
+					return cb(res, msg[3]);
 				case "openWebPage":
 					return cb(res);
 				case "evaluate":
@@ -87,6 +93,8 @@ module.exports = {
 					return cb(res);
 				case "onResourceRequested":
 					return cb(res);
+				case "onPageError":
+					return cb(res, msg[3]);
 				case "render":
 					return cb();
 				case "closeWebPage":
@@ -104,6 +112,10 @@ module.exports = {
 
 		p.createWebPage = function(properties, callback) {
 			request(["createWebPage", properties], callback);
+		};
+
+		p.onError = function(callback) {
+			request(["onPhantomError"], callback);
 		};
 
 		p.exit = function() {
@@ -135,6 +147,12 @@ module.exports = {
 				var cbId = requestCnt++;
 
 				request(["onResourceRequested", index, cbId], callback, cbId);
+			};
+
+			this.onError = function(callback) {
+				var cbId = requestCnt++;
+
+				request(["onPageError", index, cbId], callback, cbId);
 			};
 
 			this.render = function(fileName, callback) {
