@@ -1,8 +1,12 @@
 {
   "name": "ghostbuster",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Node.js wrapper for PhantomJS",
   "author": "Colin Ihrig <cjihrig@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "cjihrig/ghostbuster"
+  },
   "preferGlobal": "false",
   "engines": {
     "node": "0.8.x",
